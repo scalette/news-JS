@@ -3,6 +3,7 @@ import Sources from './sources/sources';
 
 export class AppView {
     constructor() {
+        console.log('sd2')
         this.news = new News();
         this.sources = new Sources();
     }

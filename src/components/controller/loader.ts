@@ -1,19 +1,31 @@
+import {
+    Callback,
+    GetRespProperties,
+    GetRespPropertiesAdditionalOptions,
+    LoaderOptions,
+    Method,
+} from '../../types/interfaces';
+
 class Loader {
-    constructor(baseLink, options) {
+    protected baseLink: string;
+    protected options: LoaderOptions;
+
+    constructor(baseLink: string, options: LoaderOptions) {
+        console.log('adqwd', baseLink);
         this.baseLink = baseLink;
         this.options = options;
     }
 
     getResp(
-        { endpoint, options = {} },
-        callback = () => {
+        { endpoint, options = {} }: GetRespProperties,
+        callback: Callback = () => {
             console.error('No callback for GET response');
         }
     ) {
-        this.load('GET', endpoint, callback, options);
+        this.load(Method.Get, endpoint, callback, options);
     }
 
-    errorHandler(res) {
+    errorHandler(res: Response): Response {
         if (!res.ok) {
             if (res.status === 401 || res.status === 404)
                 console.log(`Sorry, but there is ${res.status} error: ${res.statusText}`);
@@ -23,10 +35,11 @@ class Loader {
         return res;
     }
 
-    makeUrl(options, endpoint) {
+    makeUrl(options: GetRespPropertiesAdditionalOptions, endpoint: string): string {
         const urlOptions = { ...this.options, ...options };
         let url = `${this.baseLink}${endpoint}?`;
 
+        console.log(url, this.baseLink);
         Object.keys(urlOptions).forEach((key) => {
             url += `${key}=${urlOptions[key]}&`;
         });
@@ -34,7 +47,7 @@ class Loader {
         return url.slice(0, -1);
     }
 
-    load(method, endpoint, callback, options = {}) {
+    load(method: Method, endpoint: string, callback: Callback, options: GetRespPropertiesAdditionalOptions = {}) {
         fetch(this.makeUrl(options, endpoint), { method })
             .then(this.errorHandler)
             .then((res) => res.json())
